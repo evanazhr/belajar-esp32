@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { Metadata } from "next";
 
+export const metada: Metadata = {
+  title: "Aplikasi Sensor Suhu ESP32 Supabase & Vercel",
+};
 export default function Home() {
   const [logSuhu, setLogSuhu] = useState<any[]>([]);
   // Pindahkan client ke luar atau gunakan inisialisasi satu kali
@@ -49,30 +53,28 @@ export default function Home() {
   return (
     <div className="w-full min-h-screen flex items-center justify-center flex-col">
       <div className="max-w-[1200px] border-1 border-white/10 rounded-lg py-6 px-4 mx-auto w-[calc(100%-20px)]">
-        <h1 className="text-3xl uppercase text-center font-bold">
+        <h1 className="text-lg md:text-xl uppercase text-center font-bold mb-6">
           Aplikasi pemantauan suhu dengan menggunakan sensor suhu, esp32,
           supabase dan vercel
         </h1>
-        <div className="flex items-center justify-center my-6">
-          <button className="bg-blue-500 py-2 px-6 rounded-md text-xl uppercase hover:bg-blue-500/90 cursor-pointer ">
-            dashboard
-          </button>
-        </div>
+
         <div className="min-h-[500px] w-full overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-white/20">
+                <th className="py-2 px-4">No.</th>
                 <th className="py-2 px-4">Device ID</th>
                 <th className="py-2 px-4">Suhu (°C)</th>
                 <th className="py-2 px-4">Waktu</th>
               </tr>
             </thead>
             <tbody>
-              {logSuhu?.map((suhu) => (
+              {logSuhu?.map((suhu, index) => (
                 <tr
                   key={suhu.id}
                   className="border-b border-white/5 hover:bg-white/5"
                 >
+                  <td className="py-2 px-4">{index + 1}</td>
                   <td className="py-2 px-4">{suhu.device_id}</td>
                   <td className="py-2 px-4 font-mono text-blue-400">
                     {suhu.temperature}°C

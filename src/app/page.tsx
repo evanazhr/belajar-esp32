@@ -69,21 +69,25 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {logSuhu?.map((suhu, index) => (
-                <tr
-                  key={suhu.id}
-                  className="border-b border-white/5 hover:bg-white/5"
-                >
-                  <td className="py-2 px-4">{index + 1}</td>
-                  <td className="py-2 px-4">{suhu.device_id}</td>
-                  <td className="py-2 px-4 font-mono text-blue-400">
-                    {suhu.temperature}°C
-                  </td>
-                  <td className="py-2 px-4 text-sm text-gray-400">
-                    {new Date(suhu.created_at).toLocaleString("id-ID")}
-                  </td>
-                </tr>
-              ))}
+              {logSuhu?.map((suhu, index) => {
+                if (index < 20) {
+                  return (
+                    <tr
+                      key={suhu.id}
+                      className="border-b border-white/5 hover:bg-white/5"
+                    >
+                      <td className="py-2 px-4">{index + 1}</td>
+                      <td className="py-2 px-4">{suhu.device_id}</td>
+                      <td className="py-2 px-4 font-mono text-blue-400">
+                        {suhu.temperature}°C
+                      </td>
+                      <td className="py-2 px-4 text-sm text-gray-400">
+                        {new Date(suhu.created_at).toLocaleString("id-ID")}
+                      </td>
+                    </tr>
+                  );
+                }
+              })}
             </tbody>
           </table>
         </div>

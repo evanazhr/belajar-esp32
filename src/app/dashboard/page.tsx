@@ -41,9 +41,12 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full text-white font-sans p-4 md:p-8 relative ">
+    <div className="min-h-screen w-full text-white font-sans p-4 pt-20 md:pt-40 md:p-8 relative ">
+      {/* Efek Cahaya Latar */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px] -z-10" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px] -z-10" />
+
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] -z-10" />
 
       <main className="max-w-6xl mx-auto space-y-8 relative z-10">
         {/* Hero Section */}
@@ -60,7 +63,7 @@ export default function Dashboard() {
         </section>
 
         {/* Highlight Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
             <p className="text-sm text-gray-400 uppercase tracking-widest">
               Suhu Saat Ini
@@ -137,13 +140,17 @@ export default function Dashboard() {
                       {sensor.humidity}%
                     </td>
                     <td className="py-4 px-6 text-sm text-gray-400">
-                      {new Date(sensor.created_at).toLocaleString("id-ID", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        day: "2-digit",
-                        month: "short",
-                      })}
+                      {new Date(sensor.created_at + "Z").toLocaleString(
+                        "id-ID",
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                          day: "2-digit",
+                          month: "short",
+                          hour12: false,
+                        },
+                      )}
                     </td>
                   </tr>
                 ))}

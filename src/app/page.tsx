@@ -14,17 +14,20 @@ export default function LandingPage() {
           <h2 className="text-blue-400 font-mono tracking-widest uppercase text-sm">
             Fullstack IoT Project
           </h2>
-          <h1 className="text-5xl md:text-7xl font-bold leading-tight">
-            Thermosync IOT,
+          <h1 className="text-4xl md:text-7xl font-bold leading-tight">
+            Thermosync
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
-              Pantau Suhu Tanpa Refresh.
+              Realtime Monitoring
             </span>
           </h1>
           <p className="text-gray-400 text-lg md:text-xl">
-            Sistem pemantauan suhu real-time menggunakan sensor DHT22 dan ESP32.
-            Dibangun dengan Next.js dan Supabase sebagai databasenya untuk
-            kemudahan akses dan performa maksimal.
+            Sistem pemantauan suhu real-time menggunakan sensor
+            <span className="text-yellow-200"> DHT22</span> dan
+            <span className="text-blue-400"> ESP32</span>. Dibangun dengan
+            <span className="text-white"> NextJs</span>. dan
+            <span className="text-emerald-400"> Supabase </span>
+            sebagai databasenya untuk kemudahan akses dan performa maksimal. ,
           </p>
         </div>
 
@@ -44,10 +47,6 @@ export default function LandingPage() {
           </a>
         </div>
       </main>
-
-      <footer className="absolute bottom-8 text-gray-500 text-sm font-mono">
-        Built by Evan • 2026
-      </footer>
     </div>
   );
 }

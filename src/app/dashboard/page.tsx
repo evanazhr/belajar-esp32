@@ -63,37 +63,37 @@ export default function Dashboard() {
         </section>
 
         {/* Highlight Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="backdrop-blur-xl justify-between flex flex-col bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
             <p className="text-sm text-gray-400 uppercase tracking-widest">
               Suhu Saat Ini
             </p>
-            <h2 className="text-5xl font-bold text-blue-400 mt-2">
+            <h2 className="text-3xl md:text-5xl font-bold text-blue-400 mt-2">
               {latestTemp}°C
             </h2>
           </div>
-          <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
+          <div className="backdrop-blur-xl justify-between flex flex-col bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
             <p className="text-sm text-gray-400 uppercase tracking-widest">
               Kelembapan Saat Ini
             </p>
-            <h2 className="text-5xl font-bold text-blue-400 mt-2">
+            <h2 className="text-3xl md:text-5xl font-bold text-blue-400 mt-2">
               {latestHumidity}%
             </h2>
           </div>
-          <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
+          <div className="backdrop-blur-xl justify-between flex flex-col bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
             <p className="text-sm text-gray-400 uppercase tracking-widest">
               Status Device
             </p>
-            <div className="flex items-center gap-2 mt-4 text-2xl font-semibold text-emerald-400">
+            <div className="flex items-center gap-2 mt-4 text-xl md:3xl font-semibold text-emerald-400">
               <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
               Connected
             </div>
           </div>
-          <div className="backdrop-blur-xl bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
+          <div className="backdrop-blur-xl justify-between flex flex-col bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
             <p className="text-sm text-gray-400 uppercase tracking-widest">
               Total Logs
             </p>
-            <h2 className="text-4xl font-bold mt-2">
+            <h2 className="text-3xl md:text-4xl  font-bold mt-2">
               {sensorLogs.length} Data
             </h2>
           </div>

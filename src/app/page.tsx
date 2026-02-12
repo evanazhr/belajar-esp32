@@ -4,8 +4,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen text-white flex flex-col items-center justify-center p-6 relative ">
       {/* Efek Cahaya Latar */}
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px] -z-10" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px] -z-10" />
+      <div className="absolute hidden md:flex top-[-10%] left-[10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px] -z-10" />
+      <div className="absolute hidden md:flex bottom-[-10%] right-[10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px] -z-10" />
 
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] -z-10" />
 

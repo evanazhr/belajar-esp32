@@ -31,16 +31,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased smooth-scroll `}
       >
-        <header className="fixed top-0 z-20 w-full">
-          <Navbar />
-        </header>
-        <div className="overflow-hidden">
-          {children}
+        <Navbar />
+        <main className="w-full max-w-[100vw] ">{children}</main>
 
-          <footer>
-            <Footer />
-          </footer>
-        </div>
+        <Footer />
       </body>
     </html>
   );

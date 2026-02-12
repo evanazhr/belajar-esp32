@@ -3,19 +3,20 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-// Inisialisasi Supabase
+// initialization Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabasePublishableKey =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!;
+const supabase = createClient(supabaseUrl, supabasePublishableKey);
 
 export async function POST(request: Request) {
   try {
-    const { device_id, temperature } = await request.json();
+    const { device_id, temperature, humidity } = await request.json();
 
-    // Masukin data ke tabel 'log_suhu'
+    // inser data to sensor_log table
     const { data, error } = await supabase
-      .from("log_suhu")
-      .insert([{ device_id, temperature }]);
+      .from("sensor_log")
+      .insert([{ device_id, temperature, humidity }]);
 
     if (error) throw error;
 
@@ -34,4 +35,17 @@ export async function POST(request: Request) {
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+}
+
+export async function GET(request: Request) {
+  const { data, error } = await supabase
+    .from("sensor_log")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(20);
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(data);
 }

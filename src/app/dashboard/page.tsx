@@ -4,9 +4,38 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { HighlightCard } from "@/components/Card";
 
+
+const ConnectionStatus = ({ lastCreatedAt } : {lastCreatedAt : string}) => {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  if (!lastCreatedAt) {
+    return <div className="text-gray-400">Loading...</div>;
+  }
+
+  const sensorDate = new Date(lastCreatedAt.endsWith('Z') ? lastCreatedAt : lastCreatedAt + "Z");
+
+  const isConnected = lastCreatedAt && (now.getTime() - sensorDate.getTime()) < 30000;
+  console.log(isConnected)
+  return (
+    <>
+    {isConnected &&<span className={`w-3 h-3 rounded-full ${isConnected ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`} />}
+    <div className={isConnected ? "text-emerald-400" : "text-red-400"}>
+       {isConnected ? "Connected" : "Not Connected"}
+    </div>
+    </>
+  );
+};
+
 export default function Dashboard() {
   const [sensorLogs, setSensorLogs] = useState<any[]>([]);
   const supabase = createClient();
+
+
 
   // get current data
   const latestData = [
@@ -22,16 +51,13 @@ export default function Dashboard() {
     },
     {
       title: "Kelembapan Tanah",
-      data : sensorLogs[0]?.moisture || "--",
+      data : (sensorLogs[0]?.moisture || sensorLogs[0]?.moisture === 0) ? sensorLogs[0]?.moisture : "--",
       unit:"%"
     }
 
   ]
   
-    
-
-
-
+  
 
   useEffect(() => {
     const loadData = async () => {
@@ -75,7 +101,7 @@ export default function Dashboard() {
         {/* Hero Section */}
         <section className="text-center space-y-4 py-10">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
-            Dashboard Suhu dan Kelembapan
+            Dashboard
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             Data selalu real-time dengan integrasi{" "}
@@ -108,30 +134,8 @@ export default function Dashboard() {
                 Status Device
               </p>
               <div className="flex items-center gap-2 mt-4 text-xl md:3xl font-semibold text-emerald-400">
-                <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
-                {new Date().getMilliseconds() - new Date(sensorLogs[0]?.created_at).getMilliseconds() > 30000 ? "Not Connected" : "Connected"}
+                <ConnectionStatus lastCreatedAt={sensorLogs[0]?.created_at} />
               </div>
-              </>
-            </HighlightCard>
-            <HighlightCard>
-              <>
-              <p className="text-sm text-gray-400 uppercase tracking-widest">
-                Status Pump
-              </p>
-              <div className="flex items-center gap-2 mt-4 text-xl md:3xl font-semibold text-emerald-400">
-                { sensorLogs[0]?.pump === 1 && <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />}
-                {sensorLogs[0]?.pump === 1? "ON" : "OFF"}
-              </div>
-              </>
-            </HighlightCard>
-            <HighlightCard>
-              <>
-                <p className="text-sm text-gray-400 uppercase tracking-widest">
-                  Total Logs
-                </p>
-                <h2 className="text-3xl md:text-4xl  font-bold mt-2">
-                  {sensorLogs.length} Data
-                </h2>
               </>
             </HighlightCard>
           </div>
@@ -140,8 +144,8 @@ export default function Dashboard() {
         <div className="backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl">
           <div className="p-6 border-b border-white/10 flex justify-between items-center">
             <h3 className="text-xl font-semibold">History Log</h3>
-            <span className="px-3 py-1 bg-white/10 rounded-full text-xs">
-              Real-time Active
+            <span className="px-3 py-1 bg-white/10 rounded-full text-sm">
+              Total Logs : {sensorLogs.length} Data
             </span>
           </div>
 
@@ -159,6 +163,9 @@ export default function Dashboard() {
                   </th>
                   <th className="py-4 px-6 font-medium text-blue-400">
                     Soil Moisture (%)
+                  </th>
+                  <th className="py-4 px-6 font-medium text-blue-400">
+                    Pump
                   </th>
                   <th className="py-4 px-6 font-medium">Timestamp</th>
                 </tr>
@@ -181,6 +188,9 @@ export default function Dashboard() {
                     </td>
                     <td className="py-4 px-6 font-mono text-blue-400 font-bold text-lg">
                       {sensor.moisture}%
+                    </td>
+                     <td className="py-4 px-6 font-mono text-blue-400 font-bold text-lg">
+                      {Number(sensor.pump) === 1 ? "ON" : "OFF"}
                     </td>
                     <td className="py-4 px-6 text-sm text-gray-400">
                       {new Date(sensor.created_at + "Z").toLocaleString(

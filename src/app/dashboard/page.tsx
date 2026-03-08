@@ -62,7 +62,7 @@ export default function Dashboard() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const response = await fetch("/api/suhu");
+        const response = await fetch("/api/sensors");
         const result = await response.json();
         setSensorLogs(result);
       } catch (error) {

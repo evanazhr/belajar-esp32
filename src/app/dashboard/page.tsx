@@ -2,14 +2,36 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { HighlightCard } from "@/components/Card";
 
 export default function Dashboard() {
   const [sensorLogs, setSensorLogs] = useState<any[]>([]);
   const supabase = createClient();
 
-  // get current temp
-  const latestTemp = sensorLogs[0]?.temperature || "--";
-  const latestHumidity = sensorLogs[0]?.humidity || "--";
+  // get current data
+  const latestData = [
+    {
+      title : "Suhu Udara",
+      data : sensorLogs[0]?.temperature || "--",
+      unit: "°C"
+    },
+    {
+      title : "Kelembapan Udara",
+      data : sensorLogs[0]?.humidity || "--",
+      unit: "%"
+    },
+    {
+      title: "Kelembapan Tanah",
+      data : sensorLogs[0]?.moisture || "--",
+      unit:"%"
+    }
+
+  ]
+  
+    
+
+
+
 
   useEffect(() => {
     const loadData = async () => {
@@ -34,6 +56,7 @@ export default function Dashboard() {
         },
       )
       .subscribe();
+
 
     return () => {
       supabase.removeChannel(channel);
@@ -64,40 +87,54 @@ export default function Dashboard() {
 
         {/* Highlight Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="backdrop-blur-xl justify-between flex flex-col bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
-            <p className="text-sm text-gray-400 uppercase tracking-widest">
-              Suhu Saat Ini
-            </p>
-            <h2 className="text-3xl md:text-5xl font-bold text-blue-400 mt-2">
-              {latestTemp}°C
-            </h2>
+          {
+            latestData.map((item, index) => (
+              <HighlightCard key={index}>
+                <>
+                  <p className="text-sm text-gray-400 uppercase tracking-widest">
+                    {item.title}
+                  </p>
+                  <h2 className="text-3xl md:text-5xl font-bold text-blue-400 mt-2">
+                    {item.data}{item.unit}
+                  </h2>
+                </>
+              </HighlightCard>
+            ))
+          }
+
+            <HighlightCard>
+              <>
+              <p className="text-sm text-gray-400 uppercase tracking-widest">
+                Status Device
+              </p>
+              <div className="flex items-center gap-2 mt-4 text-xl md:3xl font-semibold text-emerald-400">
+                <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
+                {new Date().getMilliseconds() - new Date(sensorLogs[0]?.created_at).getMilliseconds() > 30000 ? "Not Connected" : "Connected"}
+              </div>
+              </>
+            </HighlightCard>
+            <HighlightCard>
+              <>
+              <p className="text-sm text-gray-400 uppercase tracking-widest">
+                Status Pump
+              </p>
+              <div className="flex items-center gap-2 mt-4 text-xl md:3xl font-semibold text-emerald-400">
+                { sensorLogs[0]?.pump === 1 && <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />}
+                {sensorLogs[0]?.pump === 1? "ON" : "OFF"}
+              </div>
+              </>
+            </HighlightCard>
+            <HighlightCard>
+              <>
+                <p className="text-sm text-gray-400 uppercase tracking-widest">
+                  Total Logs
+                </p>
+                <h2 className="text-3xl md:text-4xl  font-bold mt-2">
+                  {sensorLogs.length} Data
+                </h2>
+              </>
+            </HighlightCard>
           </div>
-          <div className="backdrop-blur-xl justify-between flex flex-col bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
-            <p className="text-sm text-gray-400 uppercase tracking-widest">
-              Kelembapan Saat Ini
-            </p>
-            <h2 className="text-3xl md:text-5xl font-bold text-blue-400 mt-2">
-              {latestHumidity}%
-            </h2>
-          </div>
-          <div className="backdrop-blur-xl justify-between flex flex-col bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
-            <p className="text-sm text-gray-400 uppercase tracking-widest">
-              Status Device
-            </p>
-            <div className="flex items-center gap-2 mt-4 text-xl md:3xl font-semibold text-emerald-400">
-              <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
-              Connected
-            </div>
-          </div>
-          <div className="backdrop-blur-xl justify-between flex flex-col bg-white/5 border border-white/10 p-6 rounded-3xl shadow-2xl">
-            <p className="text-sm text-gray-400 uppercase tracking-widest">
-              Total Logs
-            </p>
-            <h2 className="text-3xl md:text-4xl  font-bold mt-2">
-              {sensorLogs.length} Data
-            </h2>
-          </div>
-        </div>
 
         {/* Table Section (Glassmorphism) */}
         <div className="backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl">
@@ -109,7 +146,7 @@ export default function Dashboard() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-nowrap text-left">
               <thead>
                 <tr className="bg-white/5 text-gray-400 text-sm">
                   <th className="py-4 px-6 font-medium">No.</th>
@@ -118,7 +155,10 @@ export default function Dashboard() {
                     Temperature (°C)
                   </th>
                   <th className="py-4 px-6 font-medium text-blue-400">
-                    Humidity (°C)
+                    Humidity (%)
+                  </th>
+                  <th className="py-4 px-6 font-medium text-blue-400">
+                    Soil Moisture (%)
                   </th>
                   <th className="py-4 px-6 font-medium">Timestamp</th>
                 </tr>
@@ -138,6 +178,9 @@ export default function Dashboard() {
                     </td>
                     <td className="py-4 px-6 font-mono text-blue-400 font-bold text-lg">
                       {sensor.humidity}%
+                    </td>
+                    <td className="py-4 px-6 font-mono text-blue-400 font-bold text-lg">
+                      {sensor.moisture}%
                     </td>
                     <td className="py-4 px-6 text-sm text-gray-400">
                       {new Date(sensor.created_at + "Z").toLocaleString(

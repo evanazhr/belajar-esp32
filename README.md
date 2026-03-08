@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌡️ ThermoSync IoT Dashboard
 
-## Getting Started
+A high-performance, full-stack IoT monitoring system that bridges the gap between hardware and the web. This project demonstrates a real-time data pipeline from an **ESP32** microcontroller to a **Next.js** dashboard via **Supabase**.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Real-time Synchronization**: Uses Supabase Realtime (WebSockets) to update the UI instantly without page refreshes.
+- **Glassmorphism UI**: A modern, sleek dashboard built with Tailwind CSS and Framer Motion.
+- **Hybrid Data Fetching**: Optimized performance using Next.js Route Handlers for initial data hydration.
+- **Robust Hardware Integration**: ESP32 firmware with auto-reconnect logic and sensor error handling (DHT22).
+- **Secure Architecture**: Row Level Security (RLS) enabled on the database to prevent unauthorized access.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+- **Frontend**: Next.js 16 (App Router), Tailwind CSS, TypeScript.
+- **Backend**: Next.js Route Handlers (API).
+- **Database**: Supabase (PostgreSQL + Realtime).
+- **Hardware**: ESP32, DHT22 Temperature & Humidity Sensor.
+- **Deployment**: Vercel.
 
-To learn more about Next.js, take a look at the following resources:
+## 🔌 Hardware Circuit (Tested on Wokwi)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **VCC** -> 3.3V
+- **GND** -> GND
+- **Data** -> GPIO 15
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📖 How it Works
 
-## Deploy on Vercel
+1. **The ESP32** reads temperature data from the DHT22 sensor every 10 seconds.
+2. **Data Transmission**: The ESP32 sends a JSON payload via a `POST` request to the Next.js API Route.
+3. **Database Storage**: The API Route validates the data and inserts it into Supabase.
+4. **Instant Update**: The Next.js dashboard, which is "listening" to database changes via a Realtime Channel, updates the UI immediately as soon as a new row is inserted.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Built with ❤️ by **Evan**

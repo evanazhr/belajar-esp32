@@ -31,6 +31,30 @@ const ConnectionStatus = ({ lastCreatedAt }: { lastCreatedAt: string }) => {
   );
 };
 
+const formatDate = (dateInput: any) => {
+  if (!dateInput) return "--";
+  
+  let parsedDate: Date;
+  if (typeof dateInput === "string") {
+    parsedDate = new Date(dateInput.endsWith("Z") ? dateInput : dateInput + "Z");
+  } else {
+    parsedDate = new Date(dateInput);
+  }
+  
+  if (isNaN(parsedDate.getTime())) {
+    return "--";
+  }
+  
+  return parsedDate.toLocaleString("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    day: "2-digit",
+    month: "short",
+    hour12: false,
+  });
+};
+
 export default function Dashboard() {
   const [sensorLogs, setSensorLogs] = useState<any[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -193,17 +217,7 @@ export default function Dashboard() {
                       {sensor.humidity}%
                     </TableCell>
                     <TableCell className="py-4 px-6 text-sm text-foreground/80 font-base">
-                      {new Date(sensor.created_at + "Z").toLocaleString(
-                        "id-ID",
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                          day: "2-digit",
-                          month: "short",
-                          hour12: false,
-                        },
-                      )}
+                      {formatDate(sensor.created_at)}
                     </TableCell>
                   </TableRow>
                 ))}

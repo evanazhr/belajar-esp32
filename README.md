@@ -1,37 +1,61 @@
-# 🌡️ ThermoSync IoT Dashboard
+# 🌡️ ThermoSync - Dashboard IoT Sederhana (Gaya Neobrutalism)
 
-A high-performance, full-stack IoT monitoring system that bridges the gap between hardware and the web. This project demonstrates a real-time data pipeline from an **ESP32** microcontroller to a **Next.js** dashboard via **Supabase**.
+Sebuah dashboard pemantauan IoT sederhana dengan performa tinggi yang memvisualisasikan log data sensor secara real-time dari mikrokontroler **ESP32**. Dibangun menggunakan **Next.js**, **Supabase**, **pg (node-postgres)**, dan **node-pg-migrate** dengan estetika antarmuka **Neobrutalism** yang tebal dan kontras tinggi.
 
+## 🚀 Fitur Utama
 
-
-## 🚀 Key Features
-
-- **Real-time Synchronization**: Uses Supabase Realtime (WebSockets) to update the UI instantly without page refreshes.
-- **Glassmorphism UI**: A modern, sleek dashboard built with Tailwind CSS and Framer Motion.
-- **Hybrid Data Fetching**: Optimized performance using Next.js Route Handlers for initial data hydration.
-- **Robust Hardware Integration**: ESP32 firmware with auto-reconnect logic and sensor error handling (DHT22).
-- **Secure Architecture**: Row Level Security (RLS) enabled on the database to prevent unauthorized access.
+- **Desain Neobrutalism**: Tampilan visual premium dengan batas garis tebal (thick borders), bayangan datar (flat offset shadows), pilihan warna aksen yang dinamis, serta tipografi geometris (Space Grotesk & Space Mono).
+- **Sinkronisasi Real-time**: Menggunakan Supabase Realtime (PostgreSQL Changes) untuk memperbarui tampilan dashboard secara instan begitu log data baru dikirim oleh ESP32.
+- **Migrasi Relasional**: Skema tabel database dikelola menggunakan `node-pg-migrate` agar pelacakan dan perubahan struktur tabel terdokumentasi dengan rapi.
+- **Koneksi Database Optimal**: Menggunakan *connection pool* (`pg.Pool`) dengan pola *singleton* untuk menangani query serta penyisipan (insert) data secara efisien.
+- **Pemantauan Sederhana**: Fokus memantau parameter suhu (temperature) dan kelembapan udara (humidity) secara rapi.
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 16 (App Router), Tailwind CSS, TypeScript.
-- **Backend**: Next.js Route Handlers (API).
-- **Database**: Supabase (PostgreSQL + Realtime).
-- **Hardware**: ESP32, DHT22 Temperature & Humidity Sensor.
-- **Deployment**: Vercel.
+- **Frontend**: Next.js 16 (App Router), Tailwind CSS v4, TypeScript, Google Fonts (Space Grotesk & Space Mono).
+- **Database Access & ORM**: `pg` (node-postgres).
+- **Migrasi**: `node-pg-migrate`.
+- **Realtime Sync**: Supabase Realtime Client.
+- **Hardware**: ESP32, Sensor Suhu & Kelembapan DHT22.
 
-## 🔌 Hardware Circuit (Tested on Wokwi)
+## 🔌 Rangkaian Hardware
 
 - **VCC** -> 3.3V
 - **GND** -> GND
 - **Data** -> GPIO 15
 
-## 📖 How it Works
+## 🔧 Panduan Memulai
 
-1. **The ESP32** reads temperature data from the DHT22 sensor every 10 seconds.
-2. **Data Transmission**: The ESP32 sends a JSON payload via a `POST` request to the Next.js API Route.
-3. **Database Storage**: The API Route validates the data and inserts it into Supabase.
-4. **Instant Update**: The Next.js dashboard, which is "listening" to database changes via a Realtime Channel, updates the UI immediately as soon as a new row is inserted.
+### 1. Konfigurasi Environment
+
+Buat berkas `.env` di direktori utama (root) proyek dan isi variabel berikut:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://id-proyek-anda.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=kunci-anon-supabase-anda
+DATABASE_URL="postgresql://postgres.id-proyek-anda:[PASSWORD]@aws-1-[region].pooler.supabase.com:6543/postgres"
+```
+
+> [!IMPORTANT]
+> Karena database Supabase menggunakan alamat IPv6-only untuk koneksi langsung (*direct connection*), sangat disarankan untuk menggunakan **Connection Pooler URL** (port 6543) di dalam `DATABASE_URL` Anda untuk mendukung koneksi dari jaringan yang hanya memiliki IPv4.
+
+### 2. Jalankan Migrasi Database
+
+Terapkan tabel `sensor_log` ke database PostgreSQL Anda:
+
+```bash
+pnpm migrate:up
+```
+
+### 3. Jalankan Server Pengembangan
+
+Mulai server lokal Next.js:
+
+```bash
+pnpm dev
+```
+
+Buka [http://localhost:3000](http://localhost:3000) di browser Anda untuk melihat dashboard.
 
 ---
-Built with ❤️ by **Evan**
+Dibuat dengan ❤️ oleh **evanazhr**

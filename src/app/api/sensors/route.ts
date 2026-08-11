@@ -1,17 +1,13 @@
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { LRUCache } from "lru-cache";
+import { pool } from "@/lib/db";
 
-const tokenCache = new LRUCache({
+const tokenCache = new LRUCache<string, number[]>({
   max: 500, // Maksimal 500 IP unik yang dilacak
   ttl: 60 * 1000, // Time to live: 60 detik
 });
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: Request) {
   try {
@@ -35,13 +31,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const { device_id, temperature, humidity, moisture, pump } = await request.json();
+    const { device_id, temperature, humidity } = await request.json();
 
-    const { error } = await supabase
-      .from("sensor_log")
-      .insert([{ device_id, temperature, humidity, moisture, pump }]);
-
-    if (error) throw error;
+    const query = `
+      INSERT INTO sensor_log (device_id, temperature, humidity)
+      VALUES ($1, $2, $3)
+    `;
+    await pool.query(query, [device_id, temperature, humidity]);
 
     return NextResponse.json(
       { message: "Data tersimpan!" },
@@ -54,19 +50,25 @@ export async function POST(request: Request) {
       }
     );
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Database POST Error:", error);
+    return NextResponse.json(
+      { error: error?.message || String(error) || "Koneksi database gagal" },
+      { status: 500 }
+    );
   }
 }
 
-export async function GET(request: Request) {
-  const { data, error } = await supabase
-    .from("sensor_log")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(20);
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+export async function GET() {
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM sensor_log ORDER BY created_at DESC LIMIT 20"
+    );
+    return NextResponse.json(rows);
+  } catch (error: any) {
+    console.error("Database GET Error:", error);
+    return NextResponse.json(
+      { error: error?.message || String(error) || "Koneksi database gagal" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json(data);
 }

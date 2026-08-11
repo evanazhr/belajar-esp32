@@ -1,26 +1,143 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk), sans-serif;
+  --font-mono: var(--font-space-mono), monospace;
+  --font-heading: var(--font-space-grotesk), sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-main: var(--main);
+  --color-main-foreground: var(--main-foreground);
+  --color-secondary-background: var(--secondary-background);
+  --shadow-shadow: var(--shadow-shadow);
+  --shadow-reverse-shadow: var(--shadow-reverse-shadow);
+  --translate-boxShadowX: var(--box-shadow-x);
+  --translate-boxShadowY: var(--box-shadow-y);
+  --translate-reverseBoxShadowX: var(--reverse-box-shadow-x);
+  --translate-reverseBoxShadowY: var(--reverse-box-shadow-y);
+  --radius-base: var(--radius-base);
+  --font-base: var(--font-space-grotesk), sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #020617;
-    --foreground: #ededed;
+:root {
+  --background: #FFFDF6; /* Classic Warm Cream background for Neobrutalism */
+  --foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #000000;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #f3f4f6;
+  --accent-foreground: #000000;
+  --destructive: #ef4444;
+  --border: #000000; /* Flat black border */
+  --input: #ffffff;
+  --ring: #000000;
+  --radius: 0.625rem;
+  
+  /* Neobrutalism custom properties */
+  --main: #FACC15; /* Vibrant Yellow */
+  --main-foreground: #000000;
+  --secondary-background: #E2E8F0;
+  --shadow-shadow: 4px 4px 0px 0px #000000;
+  --shadow-reverse-shadow: -4px -4px 0px 0px #000000;
+  --box-shadow-x: 4px;
+  --box-shadow-y: 4px;
+  --reverse-box-shadow-x: -4px;
+  --reverse-box-shadow-y: -4px;
+  --radius-base: 8px;
+  --font-base: var(--font-space-grotesk);
+  --font-heading: var(--font-space-grotesk);
+}
+
+.dark {
+  --background: #0B0E14; /* Midnight background */
+  --foreground: #ffffff;
+  --card: #151821;
+  --card-foreground: #ffffff;
+  --popover: #151821;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #1f2937;
+  --secondary-foreground: #ffffff;
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+  --accent: #1f2937;
+  --accent-foreground: #ffffff;
+  --destructive: #f87171;
+  --border: #ffffff; /* Thick white borders */
+  --input: #151821;
+  --ring: #ffffff;
+  
+  /* Neobrutalism custom properties for Dark Mode */
+  --main: #38BDF8; /* Vibrant Cyan */
+  --main-foreground: #000000;
+  --secondary-background: #1E293B;
+  --shadow-shadow: 4px 4px 0px 0px #ffffff; /* High contrast white shadow */
+  --shadow-reverse-shadow: -4px -4px 0px 0px #ffffff;
+  --box-shadow-x: 4px;
+  --box-shadow-y: 4px;
+  --reverse-box-shadow-x: -4px;
+  --reverse-box-shadow-y: -4px;
+  --radius-base: 8px;
+  --font-base: var(--font-space-grotesk);
+  --font-heading: var(--font-space-grotesk);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CloudSync, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -12,7 +13,7 @@ export default function Navbar() {
 
   const NavItems = [
     {
-      name: "Home",
+      name: "Beranda",
       href: "/",
     },
     {
@@ -24,45 +25,46 @@ export default function Navbar() {
     <>
       {isActive && (
         <div
-          className="fixed inset-0 bg-white/2 backdrop-blur-sm z-20 top-0 left-0 min-h-screen md:hidden"
+          className="fixed inset-0 bg-background/40 backdrop-blur-xs z-20 top-0 left-0 min-h-screen md:hidden"
           onClick={closeMenu}
         />
       )}
-      <div className="fixed w-full top-2 z-30">
-        <div className="flex left-0 flex-col md:flex-row relative  border gap-6 md:gap-12 border-white/5 z-20 rounded-xl px-4 md:px-8 w-[calc(100vw-32px)] py-4 mx-4 md:w-fit mx-auto bg-white/5 gap-2 backdrop-blur-md shadow-xl md:items-center justify-between">
+      <div className="fixed w-full top-4 z-30">
+        <div className="flex left-0 flex-col md:flex-row relative border-2 border-border z-20 rounded-base px-4 md:px-8 w-[calc(100vw-32px)] py-4 mx-4 md:w-fit mx-auto bg-card text-card-foreground gap-4 shadow-shadow md:items-center justify-between">
           <div
-            className={`${isActive ? "border-b-1 pb-4 border-white/5 md:border-none md:pb-0 md:border-none" : ""}`}
+            className={`${isActive ? "border-b-2 pb-4 border-border md:border-none md:pb-0" : ""} flex items-center justify-between`}
           >
             <Link href={"/"}>
-              <span className="flex flex-row gap-2">
-                <CloudSync />
-                <p className="font-bold text-xl">Thermosync</p>
+              <span className="flex flex-row gap-2 items-center text-foreground hover:opacity-85 transition-opacity">
+                <CloudSync className="size-6 text-foreground" />
+                <p className="font-heading font-extrabold text-2xl tracking-tight">Thermosync</p>
               </span>
             </Link>
           </div>
           <div
-            className={`${isActive ? "flex" : "hidden md:flex"} md:flex-row duration-500 transition-all md:items-center items-start flex-col md:justify-center gap-2`}
+            className={`${isActive ? "flex mt-2" : "hidden md:flex"} md:flex-row duration-500 transition-all md:items-center items-stretch flex-col md:justify-center gap-3`}
           >
             {NavItems.map((item, index) => {
               return (
-                <Link href={item.href} key={index} className="w-full md:w-fit">
-                  <button
-                    className={`${pathname === item.href ? "border-white/20 min-w-[80px] border bg-white/5 shadow-white" : ""} w-full md:w-fit text-white/60 duration-500 hover:bg-white/10 hover:backdrop-blur-md rounded-xl font-bold hover:border hover:border-white/5 hover:shadow-white/5 inset cursor-pointer hover:shadow-xl px-6 py-2 text-base `}
+                <Link href={item.href} key={index} className="w-full md:w-fit" onClick={closeMenu}>
+                  <Button
+                    variant={pathname === item.href ? "default" : "neutral"}
+                    className="w-full md:w-fit font-bold font-heading"
                   >
                     {item.name}
-                  </button>
+                  </Button>
                 </Link>
               );
             })}
           </div>
-          <div className="absolute  right-4">
+          <div className="absolute right-4 top-4 md:hidden">
             <button
-              className="md:hidden flex cursor-pointer"
+              className="flex cursor-pointer p-1.5 border-2 border-border bg-main text-main-foreground rounded-base shadow-shadow hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all"
               onClick={() => {
                 setIsActive(!isActive);
               }}
             >
-              <Menu />
+              <Menu className="size-5" />
             </button>
           </div>
         </div>

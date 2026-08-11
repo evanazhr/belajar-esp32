@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { HighlightCard } from "@/components/Card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 
-
-const ConnectionStatus = ({ lastCreatedAt } : {lastCreatedAt : string}) => {
+const ConnectionStatus = ({ lastCreatedAt }: { lastCreatedAt: string }) => {
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
@@ -14,59 +14,60 @@ const ConnectionStatus = ({ lastCreatedAt } : {lastCreatedAt : string}) => {
   }, []);
 
   if (!lastCreatedAt) {
-    return <div className="text-gray-400">Loading...</div>;
+    return <div className="text-black/60 dark:text-white/60">Memuat...</div>;
   }
 
   const sensorDate = new Date(lastCreatedAt.endsWith('Z') ? lastCreatedAt : lastCreatedAt + "Z");
 
   const isConnected = lastCreatedAt && (now.getTime() - sensorDate.getTime()) < 30000;
-  console.log(isConnected)
+  
   return (
     <>
-    {isConnected &&<span className={`w-3 h-3 rounded-full ${isConnected ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`} />}
-    <div className={isConnected ? "text-emerald-400" : "text-red-400"}>
-       {isConnected ? "Connected" : "Not Connected"}
-    </div>
+      <span className={`w-4 h-4 rounded-full border-2 border-black dark:border-white ${isConnected ? "bg-emerald-400 animate-pulse" : "bg-red-400"}`} />
+      <div className={isConnected ? "text-emerald-600 dark:text-emerald-300 font-extrabold" : "text-red-600 dark:text-red-300 font-extrabold"}>
+        {isConnected ? "Terhubung" : "Terputus"}
+      </div>
     </>
   );
 };
 
 export default function Dashboard() {
   const [sensorLogs, setSensorLogs] = useState<any[]>([]);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const supabase = createClient();
 
-
-
-  // get current data
   const latestData = [
     {
-      title : "Suhu Udara",
-      data : sensorLogs[0]?.temperature || "--",
-      unit: "°C"
+      title: "Suhu Udara",
+      data: sensorLogs[0]?.temperature || "--",
+      unit: "°C",
+      color: "bg-[#FF8B8B] dark:bg-[#6b2c2c] text-black dark:text-white"
     },
     {
-      title : "Kelembapan Udara",
-      data : sensorLogs[0]?.humidity || "--",
-      unit: "%"
-    },
-    {
-      title: "Kelembapan Tanah",
-      data : (sensorLogs[0]?.moisture || sensorLogs[0]?.moisture === 0) ? sensorLogs[0]?.moisture : "--",
-      unit:"%"
+      title: "Kelembapan Udara",
+      data: sensorLogs[0]?.humidity || "--",
+      unit: "%",
+      color: "bg-[#A6FAFF] dark:bg-[#1e5c5e] text-black dark:text-white"
     }
-
-  ]
-  
-  
+  ];
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const response = await fetch("/api/sensors");
         const result = await response.json();
-        setSensorLogs(result);
-      } catch (error) {
+        if (Array.isArray(result)) {
+          setSensorLogs(result);
+          setErrorMsg(null);
+        } else {
+          console.error("Gagal ambil data sensor, data tidak valid:", result);
+          setSensorLogs([]);
+          const err = result?.error || result?.message || (result && Object.keys(result).length > 0 ? JSON.stringify(result) : null);
+          setErrorMsg(err && err !== "{}" ? err : "Koneksi database gagal atau tabel belum terbuat. Pastikan DATABASE_URL di file .env sudah terisi.");
+        }
+      } catch (error: any) {
         console.error({ "Gagal ambil data": error });
+        setErrorMsg(error?.message || "Gagal menghubungkan ke server API.");
       }
     };
 
@@ -78,11 +79,13 @@ export default function Dashboard() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "sensor_log" },
         (payload) => {
-          setSensorLogs((prev) => [payload.new, ...prev.slice(0, 19)]);
+          setSensorLogs((prev) => {
+            const arr = Array.isArray(prev) ? prev : [];
+            return [payload.new, ...arr.slice(0, 19)];
+          });
         },
       )
       .subscribe();
-
 
     return () => {
       supabase.removeChannel(channel);
@@ -90,109 +93,106 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full text-white font-sans p-4 pt-20 md:pt-40 md:p-8 relative ">
-      {/* Efek Cahaya Latar */}
-      <div className="absolute hidden md:flex top-[-10%] left-[10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px] -z-10" />
-      <div className="absolute hidden md:flex bottom-[-10%] right-[10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px] -z-10" />
+    <div className="min-h-screen w-full bg-background text-foreground font-sans p-4 pt-28 md:pt-40 md:p-8 relative overflow-hidden">
+      {/* Background Grid Pattern (Neobrutalist theme) */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.06)_1px,transparent_1px)] bg-[size:24px_24px] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.04)_1px,transparent_1px)] z-0 pointer-events-none" />
 
-      <div className="absolute hidden md:flex top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] -z-10" />
-
-      <main className="max-w-6xl mx-auto space-y-8 relative z-10">
+      <main className="max-w-6xl mx-auto space-y-12 relative z-10">
         {/* Hero Section */}
-        <section className="text-center space-y-4 py-10">
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+        <section className="text-center space-y-4 py-6 bg-card text-card-foreground p-8 border-2 border-border rounded-base shadow-shadow">
+          <h1 className="text-4xl md:text-6xl font-heading font-black tracking-tight">
             Dashboard
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Data selalu real-time dengan integrasi{" "}
-            <span className="text-blue-400">ESP32</span>,
-            <span className="text-emerald-400"> Supabase</span>, dan{" "}
-            <span className="text-white">Vercel</span>.
+          <p className="text-foreground/80 text-lg max-w-2xl mx-auto font-base leading-relaxed">
+            Dashboard sederhana untuk memantau data suhu dan kelembapan udara secara real-time dari modul{" "}
+            <span className="bg-main/30 px-1.5 py-0.5 border border-border rounded-sm font-bold font-mono">ESP32</span> Anda.
           </p>
         </section>
 
-        {/* Highlight Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {
-            latestData.map((item, index) => (
-              <HighlightCard key={index}>
-                <>
-                  <p className="text-sm text-gray-400 uppercase tracking-widest">
-                    {item.title}
-                  </p>
-                  <h2 className="text-3xl md:text-5xl font-bold text-blue-400 mt-2">
-                    {item.data}{item.unit}
-                  </h2>
-                </>
-              </HighlightCard>
-            ))
-          }
+        {/* Error Notification */}
+        {errorMsg && (
+          <Card className="bg-[#FF9E9E] dark:bg-[#5C1E1E] text-black dark:text-white border-2 border-border shadow-shadow p-6">
+            <CardContent className="p-0 flex items-start gap-4">
+              <span className="text-3xl">⚠️</span>
+              <div className="space-y-1">
+                <h4 className="font-heading font-extrabold text-lg">Koneksi Database Gagal</h4>
+                <p className="font-base text-sm opacity-90">{errorMsg}</p>
+                <p className="font-base text-xs opacity-75 pt-1">
+                  Harap pastikan <code className="bg-white/30 dark:bg-black/30 px-1 py-0.5 rounded font-mono">DATABASE_URL</code> di file <code className="bg-white/30 dark:bg-black/30 px-1 py-0.5 rounded font-mono">.env</code> sudah terisi dengan benar (termasuk password database Supabase) dan migrasi database sudah dijalankan dengan perintah <code className="bg-white/30 dark:bg-black/30 px-1 py-0.5 rounded font-mono">pnpm migrate:up</code>.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-            <HighlightCard>
-              <>
-              <p className="text-sm text-gray-400 uppercase tracking-widest">
-                Status Device
+        {/* Highlight Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {latestData.map((item, index) => (
+            <Card key={index} className={`${item.color} border-2 border-border shadow-shadow`}>
+              <CardContent className="p-6 flex flex-col justify-between h-full">
+                <p className="text-xs uppercase tracking-wider font-extrabold opacity-75">
+                  {item.title}
+                </p>
+                <h2 className="text-4xl md:text-5xl font-heading font-black mt-3 flex items-baseline">
+                  {item.data}
+                  <span className="text-2xl font-bold ml-1">{item.unit}</span>
+                </h2>
+              </CardContent>
+            </Card>
+          ))}
+
+          <Card className="bg-[#FFEEAD] dark:bg-[#5c531e] text-black dark:text-white border-2 border-border shadow-shadow">
+            <CardContent className="p-6 flex flex-col justify-between h-full">
+              <p className="text-xs uppercase tracking-wider font-extrabold opacity-75">
+                Status Perangkat
               </p>
-              <div className="flex items-center gap-2 mt-4 text-xl md:3xl font-semibold text-emerald-400">
+              <div className="flex items-center gap-2 mt-4 text-2xl font-black">
                 <ConnectionStatus lastCreatedAt={sensorLogs[0]?.created_at} />
               </div>
-              </>
-            </HighlightCard>
-          </div>
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* Table Section (Glassmorphism) */}
-        <div className="backdrop-blur-2xl bg-white/[0.03] border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl">
-          <div className="p-6 border-b border-white/10 flex justify-between items-center">
-            <h3 className="text-xl font-semibold">History Log</h3>
-            <span className="px-3 py-1 bg-white/10 rounded-full text-sm">
-              Total Logs : {sensorLogs.length} Data
+        {/* Table Section */}
+        <Card className="bg-card text-card-foreground p-0 overflow-hidden border-2 border-border shadow-shadow">
+          <div className="p-6 border-b-2 border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-main text-main-foreground">
+            <div>
+              <h3 className="text-2xl font-heading font-black">Riwayat Log</h3>
+              <p className="text-sm font-base opacity-80 mt-1">Data log sensor yang tersinkronisasi secara real-time.</p>
+            </div>
+            <span className="px-4 py-1.5 bg-card text-card-foreground border-2 border-border rounded-full text-sm font-extrabold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+              Total Log: {sensorLogs.length} Data
             </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-nowrap text-left">
-              <thead>
-                <tr className="bg-white/5 text-gray-400 text-sm">
-                  <th className="py-4 px-6 font-medium">No.</th>
-                  <th className="py-4 px-6 font-medium">Device ID</th>
-                  <th className="py-4 px-6 font-medium text-blue-400">
-                    Temperature (°C)
-                  </th>
-                  <th className="py-4 px-6 font-medium text-blue-400">
-                    Humidity (%)
-                  </th>
-                  <th className="py-4 px-6 font-medium text-blue-400">
-                    Soil Moisture (%)
-                  </th>
-                  <th className="py-4 px-6 font-medium text-blue-400">
-                    Pump
-                  </th>
-                  <th className="py-4 px-6 font-medium">Timestamp</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-secondary-background text-foreground hover:bg-secondary-background">
+                  <TableHead className="py-4 px-6 font-extrabold w-16 text-foreground">No.</TableHead>
+                  <TableHead className="py-4 px-6 font-extrabold text-foreground">Nama Perangkat</TableHead>
+                  <TableHead className="py-4 px-6 font-extrabold text-foreground">Suhu (°C)</TableHead>
+                  <TableHead className="py-4 px-6 font-extrabold text-foreground">Kelembapan (%)</TableHead>
+                  <TableHead className="py-4 px-6 font-extrabold text-foreground">Waktu</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {sensorLogs.map((sensor, index) => (
-                  <tr
+                  <TableRow
                     key={sensor.id}
-                    className="hover:bg-white/5 transition-colors group"
+                    className="bg-card text-foreground hover:bg-secondary-background/30 transition-colors"
                   >
-                    <td className="py-4 px-6 text-gray-500">{index + 1}</td>
-                    <td className="py-4 px-6 font-medium">
+                    <TableCell className="py-4 px-6 font-base text-foreground/70">{index + 1}</TableCell>
+                    <TableCell className="py-4 px-6 font-extrabold text-foreground">
                       {sensor.device_id}
-                    </td>
-                    <td className="py-4 px-6 font-mono text-blue-400 font-bold text-lg">
+                    </TableCell>
+                    <TableCell className="py-4 px-6 font-mono font-black text-lg text-foreground">
                       {sensor.temperature}°C
-                    </td>
-                    <td className="py-4 px-6 font-mono text-blue-400 font-bold text-lg">
+                    </TableCell>
+                    <TableCell className="py-4 px-6 font-mono font-black text-lg text-foreground">
                       {sensor.humidity}%
-                    </td>
-                    <td className="py-4 px-6 font-mono text-blue-400 font-bold text-lg">
-                      {sensor.moisture}%
-                    </td>
-                     <td className="py-4 px-6 font-mono text-blue-400 font-bold text-lg">
-                      {Number(sensor.pump) === 1 ? "ON" : "OFF"}
-                    </td>
-                    <td className="py-4 px-6 text-sm text-gray-400">
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-sm text-foreground/80 font-base">
                       {new Date(sensor.created_at + "Z").toLocaleString(
                         "id-ID",
                         {
@@ -204,13 +204,13 @@ export default function Dashboard() {
                           hour12: false,
                         },
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
-        </div>
+        </Card>
       </main>
     </div>
   );
